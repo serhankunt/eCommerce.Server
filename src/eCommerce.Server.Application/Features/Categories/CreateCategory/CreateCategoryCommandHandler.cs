@@ -6,7 +6,7 @@ using TS.Result;
 
 namespace eCommerce.Server.Application.Features.Categories.CreateCategory;
 
-public sealed class CreateCategoryCommandHandler(
+internal sealed class CreateCategoryCommandHandler(
     ICategoryRepository categoryRepository,
     IMapper mapper,
     IUnitOfWork unitOfWork) : IRequestHandler<CreateCategoryCommand, Result<string>>

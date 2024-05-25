@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\eCommerce.Server.Domain\eCommerce.Server.Domain.csproj" />
+    <InternalsVisibleTo Include="Categories.Application.Tests.Unit"/>
   </ItemGroup>
 
 </Project>
