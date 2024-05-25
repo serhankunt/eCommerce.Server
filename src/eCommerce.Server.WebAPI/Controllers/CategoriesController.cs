@@ -1,4 +1,6 @@
 ﻿using eCommerce.Server.Application.Features.Categories.CreateCategory;
+using eCommerce.Server.Application.Features.Categories.RemoveCategory;
+using eCommerce.Server.Application.Features.Categories.UpdateCategory;
 using eCommerce.Server.WebAPI.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -17,5 +19,21 @@ public class CategoriesController : ApiController
         var result = await _mediator.Send(request,cancellationToken);
 
         return StatusCode(result.StatusCode, result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Update(UpdateCategoryCommand request, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(request, cancellationToken);
+
+        return StatusCode(result.StatusCode, result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> DeleteById(Guid Id , CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new DeleteCategoryByIdCommand(Id),cancellationToken);
+        
+        return StatusCode(result.StatusCode,result);    
     }
 }
