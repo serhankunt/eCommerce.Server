@@ -1,4 +1,5 @@
 using AutoMapper;
+using eCommerce.Server.Application;
 using eCommerce.Server.Application.Behaviors;
 using eCommerce.Server.Application.Features.Categories.CreateCategory;
 using eCommerce.Server.Application.Features.Categories.RemoveCategory;
@@ -30,12 +31,11 @@ public class DeleteByIdTests
 
         services.AddTransient(_ => categoryRepository); 
         services.AddTransient(_ => unitOfWork);
-        services.AddTransient<IRequestHandler<CreateCategoryCommand,Result<string>>,CreateCategoryCommandHandler>();
 
-        services.AddValidatorsFromAssemblyContaining<CreateCategoryCommandValidator>();
+        services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
         services.AddMediatR(cfg =>
         {
-            cfg.RegisterServicesFromAssemblyContaining<CreateCategoryCommand>();
+            cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         });
 

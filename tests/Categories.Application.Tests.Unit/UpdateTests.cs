@@ -1,4 +1,5 @@
 using AutoMapper;
+using eCommerce.Server.Application;
 using eCommerce.Server.Application.Behaviors;
 using eCommerce.Server.Application.Features.Categories.CreateCategory;
 using eCommerce.Server.Application.Features.Categories.UpdateCategory;
@@ -30,12 +31,11 @@ public class UpdateTests
         services.AddTransient(_ => categoryRepository);
         services.AddTransient(_ => mapper);
         services.AddTransient(_ => unitOfWork);
-        services.AddTransient<IRequestHandler<UpdateCategoryCommand,Result<string>>,UpdateCategoryCommandHandler>();
 
-        services.AddValidatorsFromAssemblyContaining<UpdateCategoryCommandValidator>();
+        services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
         services.AddMediatR(cfg =>
         {
-            cfg.RegisterServicesFromAssemblyContaining<UpdateCategoryCommand>();
+            cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         });
 

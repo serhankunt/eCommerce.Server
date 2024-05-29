@@ -13,7 +13,7 @@ public class GetAllCategoryQueryHandler(
         var categories = await categoryRepository
             .GetAll()
             .Include(x=>x.MainCategory)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         return new Result<List<Category>>(categories);
     }
