@@ -1,25 +1,60 @@
 using AutoMapper;
+using eCommerce.Server.Application.Behaviors;
 using eCommerce.Server.Application.Features.Categories.CreateCategory;
 using eCommerce.Server.Application.Features.Categories.UpdateCategory;
 using eCommerce.Server.Domain.Categories;
 using FluentAssertions;
+using FluentValidation;
 using GenericRepository;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using System.Linq.Expressions;
+using TS.Result;
 
 namespace Categories.Application.Tests.Unit;
 
 public class UpdateTests
 {
-    private readonly UpdateCategoryCommandHandler sut;
+    private readonly IMediator sut;
     private readonly ICategoryRepository categoryRepository = Substitute.For<ICategoryRepository>();//Mocklama iþlemi yapýldý
     private readonly IMapper mapper = Substitute.For<IMapper>();
     private readonly IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly IServiceProvider serviceProvider;
 
     public UpdateTests()
     {
-        sut = new UpdateCategoryCommandHandler(categoryRepository,mapper,unitOfWork);
+        var services = new ServiceCollection();
+
+        services.AddTransient(_ => categoryRepository);
+        services.AddTransient(_ => mapper);
+        services.AddTransient(_ => unitOfWork);
+        services.AddTransient<IRequestHandler<UpdateCategoryCommand,Result<string>>,UpdateCategoryCommandHandler>();
+
+        services.AddValidatorsFromAssemblyContaining<UpdateCategoryCommandValidator>();
+        services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssemblyContaining<UpdateCategoryCommand>();
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        });
+
+        serviceProvider = services.BuildServiceProvider();
+        sut = serviceProvider.GetRequiredService<IMediator>();
+
+    }
+
+    [Fact]
+    public async Task Update_ShouldThrowException_WhenValidateFailure()
+    {
+        //Arrange
+        var command = new UpdateCategoryCommand(Guid.NewGuid(), "", null);
+
+        //Act
+        Func<Task> act = async () => { await sut.Send(command); };
+
+        //Assert
+        await act.Should().ThrowAsync<ValidationException>();
     }
 
     [Fact]
@@ -30,7 +65,7 @@ public class UpdateTests
         categoryRepository.GetByExpressionAsync(Arg.Any<Expression<Func<Category, bool>>>()).ReturnsNull();
 
         //Act
-        var result = await sut.Handle(command, default);
+        var result = await sut.Send(command, default);
 
         //Assert
         result.IsSuccessful.Should().BeFalse();
@@ -51,7 +86,7 @@ public class UpdateTests
         categoryRepository.AnyAsync(Arg.Any<Expression<Func<Category, bool>>>()).Returns(true);
 
         //Act => Test etme
-        var result = await sut.Handle(command, default);
+        var result = await sut.Send(command, default);
 
         //Assert => Sonucu dönme
         result.IsSuccessful.Should().BeFalse();
@@ -72,7 +107,7 @@ public class UpdateTests
         categoryRepository.AnyAsync(Arg.Any<Expression<Func<Category, bool>>>()).Returns(false);
 
         //Act => Test etme
-        var result = await sut.Handle(command, default);
+        var result = await sut.Send(command, default);
 
         //Assert => Sonucu dönme
         result.IsSuccessful.Should().BeFalse();
@@ -93,7 +128,7 @@ public class UpdateTests
         categoryRepository.AnyAsync(Arg.Any<Expression<Func<Category, bool>>>()).Returns(false);
 
         //Act => Test etme
-        var result = await sut.Handle(command, default);
+        var result = await sut.Send(command, default);
 
         //Assert => Sonucu dönme
         result.IsSuccessful.Should().BeTrue();

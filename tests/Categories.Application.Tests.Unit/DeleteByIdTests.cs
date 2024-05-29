@@ -1,25 +1,46 @@
 using AutoMapper;
+using eCommerce.Server.Application.Behaviors;
+using eCommerce.Server.Application.Features.Categories.CreateCategory;
 using eCommerce.Server.Application.Features.Categories.RemoveCategory;
 using eCommerce.Server.Application.Features.Categories.UpdateCategory;
 using eCommerce.Server.Domain.Categories;
 using FluentAssertions;
+using FluentValidation;
 using GenericRepository;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using System.Linq.Expressions;
+using TS.Result;
 
 namespace Categories.Application.Tests.Unit;
 
 public class DeleteByIdTests
 {
-    private readonly DeleteCategoryByIdCommandHandler sut;
+    private readonly IMediator sut;
     private readonly ICategoryRepository categoryRepository = Substitute.For<ICategoryRepository>();//Mocklama iþlemi yapýldý
     private readonly IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly IServiceProvider serviceProvider;
     private readonly Guid guid = Guid.NewGuid();
 
     public DeleteByIdTests()
     {
-         sut =  new DeleteCategoryByIdCommandHandler(categoryRepository, unitOfWork);
+        var services = new ServiceCollection();
+
+        services.AddTransient(_ => categoryRepository); 
+        services.AddTransient(_ => unitOfWork);
+        services.AddTransient<IRequestHandler<CreateCategoryCommand,Result<string>>,CreateCategoryCommandHandler>();
+
+        services.AddValidatorsFromAssemblyContaining<CreateCategoryCommandValidator>();
+        services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssemblyContaining<CreateCategoryCommand>();
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        });
+
+        serviceProvider = services.BuildServiceProvider();
+        sut = serviceProvider.GetRequiredService<IMediator>();
     }
 
     [Fact]
@@ -30,7 +51,7 @@ public class DeleteByIdTests
         categoryRepository.GetByExpressionAsync(Arg.Any<Expression<Func<Category, bool>>>()).ReturnsNull();
 
         //Act
-        var result = await sut.Handle(command, default);
+        var result = await sut.Send(command, default);
 
         //Assert
         result.IsSuccessful.Should().BeFalse();
@@ -48,7 +69,7 @@ public class DeleteByIdTests
         categoryRepository.GetByExpressionAsync(Arg.Any<Expression<Func<Category, bool>>>()).Returns(category);
 
         //Act
-        var result = await sut.Handle(command, default);
+        var result = await sut.Send(command, default);
 
         //Assert
         result.IsSuccessful.Should().BeTrue();
