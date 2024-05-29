@@ -26,7 +26,7 @@ public class UpdateTests
     public async Task Update_ReturnIsSuccessfulFalse_WhenCategoryNotFound()
     {
         //Arrange
-        var command = new UpdateCategoryCommand(Guid.NewGuid(), "New Category", null);
+        var command = new UpdateCategoryCommand(Guid.NewGuid(), "Elektronik", null);
         categoryRepository.GetByExpressionAsync(Arg.Any<Expression<Func<Category, bool>>>()).ReturnsNull();
 
         //Act
@@ -43,7 +43,7 @@ public class UpdateTests
     {
         //Arrange => Tanýmlama 
         var guid = Guid.NewGuid();
-        var command = new UpdateCategoryCommand(guid, "New Category", null);
+        var command = new UpdateCategoryCommand(guid, "Elektronik", null);
         
         var existingCategory = new Category {Id= guid, Name = new Name("Existing Category") };
 
@@ -64,7 +64,7 @@ public class UpdateTests
     {
         //Arrange => Tanýmlama 
         var guid = Guid.NewGuid();
-        var command = new UpdateCategoryCommand(guid, "New Category", guid);
+        var command = new UpdateCategoryCommand(guid, "Elektronik", guid);
 
         var existingCategory = new Category { Id = guid, Name = new Name("Existing Category") };
 
@@ -85,7 +85,7 @@ public class UpdateTests
     {
         //Arrange => Tanýmlama 
         var guid = Guid.NewGuid();
-        var command = new UpdateCategoryCommand(guid, "New Category", null);
+        var command = new UpdateCategoryCommand(guid, "Elektronik", null);
 
         var existingCategory = new Category { Id = guid, Name = new Name("Existing Category") };
 
