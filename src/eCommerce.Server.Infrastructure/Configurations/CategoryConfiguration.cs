@@ -1,4 +1,5 @@
 using eCommerce.Server.Domain.Categories;
+using eCommerce.Server.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,9 +15,6 @@ public sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .IsRequired()
             .HasColumnType("varchar(50)");
 
-
         builder.HasQueryFilter(x => !x.IsDeleted);
-
-
     }
 }

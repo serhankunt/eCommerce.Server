@@ -1,5 +1,6 @@
 using AutoMapper;
 using eCommerce.Server.Domain.Categories;
+using eCommerce.Server.Domain.Shared;
 using GenericRepository;
 using MediatR;
 using TS.Result;
@@ -28,12 +29,9 @@ public class UpdateCategoryCommandHandler(
             }
         }
 
-        if (request.MainCategoryId is not null)
+        if (request.MainCategoryId is not null && request.Id == request.MainCategoryId)
         {
-            if (request.Id == request.MainCategoryId)
-            {
-                return Result<string>.Failure("Main category cannot be itself");
-            }
+            return Result<string>.Failure("Main category cannot be itself"); 
         }
 
         mapper.Map(request, category);  

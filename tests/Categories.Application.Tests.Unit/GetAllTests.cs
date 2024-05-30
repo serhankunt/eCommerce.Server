@@ -50,6 +50,32 @@ public class GetAllTests
         var result = await sut.Send(query);
 
         //Assert
-        result.Data!.Count().Should().Be(0);
+        result.Data!.Count.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task GetAll_ShouldReturnList_WhenCategoryListHaveCategories()
+    {
+        var query = new GetAllCategoryQuery();
+        var emptyCategoryList = new List<Category>()
+        {
+            new Category()
+            {
+                Id=Guid.NewGuid(),
+                IsDeleted=false,
+                MainCategoryId= null,
+                Name = new("Elektronik")
+            }
+        }.AsQueryable().BuildMock();
+
+        categoryRepository
+            .GetAll()
+            .Returns(emptyCategoryList);
+
+        //Act
+        var result = await sut.Send(query, default);
+
+        //Assert
+        result.Data!.Count.Should().Be(1);
     }
 }

@@ -1,4 +1,5 @@
 using eCommerce.Server.Domain.Abstractions;
+using eCommerce.Server.Domain.Shared;
 
 namespace eCommerce.Server.Domain.Categories;
 

@@ -1,5 +1,6 @@
 using AutoMapper;
 using eCommerce.Server.Domain.Categories;
+using eCommerce.Server.Domain.Shared;
 using GenericRepository;
 using MediatR;
 using TS.Result;
@@ -13,7 +14,7 @@ internal sealed class CreateCategoryCommandHandler(
 {
     public async Task<Result<string>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
     {
-        var isCategoryExist = await categoryRepository.AnyAsync(p => p.Name == new Name(request.Name));
+        var isCategoryExist = await categoryRepository.AnyAsync(p => p.Name == new Name(request.Name),cancellationToken);
         if (isCategoryExist)
         {
             return Result<string>.Failure("Category is already exist");
