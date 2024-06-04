@@ -1,8 +1,4 @@
-﻿using eCommerce.Server.Application.Features.Categories.CreateCategory;
-using eCommerce.Server.Application.Features.Categories.GetAllCategory;
-using eCommerce.Server.Application.Features.Categories.RemoveCategory;
-using eCommerce.Server.Application.Features.Categories.UpdateCategory;
-using eCommerce.Server.Application.Features.Companies.CreateCompany;
+﻿using eCommerce.Server.Application.Features.Companies.CreateCompany;
 using eCommerce.Server.WebAPI.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

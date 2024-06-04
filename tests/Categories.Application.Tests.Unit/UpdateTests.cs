@@ -4,6 +4,7 @@ using eCommerce.Server.Application.Behaviors;
 using eCommerce.Server.Application.Features.Categories.CreateCategory;
 using eCommerce.Server.Application.Features.Categories.UpdateCategory;
 using eCommerce.Server.Domain.Categories;
+using eCommerce.Server.Domain.Shared;
 using FluentAssertions;
 using FluentValidation;
 using GenericRepository;

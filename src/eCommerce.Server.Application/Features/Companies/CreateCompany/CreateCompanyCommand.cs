@@ -1,5 +1,3 @@
-using eCommerce.Server.Application.Utilities;
-using FluentValidation;
 using MediatR;
 using TS.Result;
 
@@ -12,38 +10,6 @@ public sealed record CreateCompanyCommand(
     string Country,
     string City,
     string Town,
-    string Street):IRequest<Result<string>>;
-
-
-public class CreateCompanyCommandValidator : AbstractValidator<CreateCompanyCommand>
-{
-    public CreateCompanyCommandValidator()
-    {
-        RuleFor(p => p.Name)
-            .MinimumLength(3);
-
-        RuleFor(p => p.TaxDepartmantValue)
-            .TaxDepartmentValueMustBeValid();
-
-        RuleFor(p => p.TaxNumber)
-            .TaxNumberMustBeValid();
-
-        RuleFor(p => p.Country)
-            .MinimumLength(3);
-
-        RuleFor(p => p.City)
-            .MinimumLength(3);
-
-        RuleFor(p => p.Town)
-            .MinimumLength(3);
-
-    }
-}
-
-public sealed class CreateCompanyCommandHandler : IRequestHandler<CreateCompanyCommand, Result<string>>
-{
-    public Task<Result<string>> Handle(CreateCompanyCommand request, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-}
+    string Street,
+    string FullAddress
+    ):IRequest<Result<string>>;
